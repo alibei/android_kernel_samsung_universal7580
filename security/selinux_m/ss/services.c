@@ -2530,7 +2530,6 @@ int security_fs_use(
 {
 	int rc = 0;
 	struct ocontext *c;
-	u32 tmpsid;
 
 	read_lock(&policy_rwlock);
 
@@ -2545,8 +2544,7 @@ int security_fs_use(
 		*behavior = c->v.behavior;
 		if (!c->sid[0]) {
 			rc = sidtab_context_to_sid(&sidtab, &c->context[0],
-						   &tmpsid);
-			c->sid[0] = tmpsid;
+						   &c->sid[0]);
 			if (rc)
 				goto out;
 		}
@@ -3017,10 +3015,6 @@ int selinux_audit_rule_init(u32 field, u32 op, char *rulestr, void **vrule)
 	struct selinux_audit_rule **rule = (struct selinux_audit_rule **)vrule;
 	int rc = 0;
 
-#ifdef CONFIG_RKP_KDP
-	if ((rc = security_integrity_current()))
-		return rc;
-#endif
 	*rule = NULL;
 
 	if (!ss_initialized)
@@ -3112,12 +3106,6 @@ out:
 int selinux_audit_rule_known(struct audit_krule *rule)
 {
 	int i;
-#ifdef CONFIG_RKP_KDP
-	int rc;
-
-	if ((rc = security_integrity_current()))
-		return rc;
-#endif
 
 	for (i = 0; i < rule->field_count; i++) {
 		struct audit_field *f = &rule->fields[i];
@@ -3146,12 +3134,6 @@ int selinux_audit_rule_match(u32 sid, u32 field, u32 op, void *vrule,
 	struct mls_level *level;
 	struct selinux_audit_rule *rule = vrule;
 	int match = 0;
-#ifdef CONFIG_RKP_KDP
-	int rc;
-
-	if ((rc = security_integrity_current()))
-		return rc;
-#endif
 
 	if (!rule) {
 		audit_log(actx, GFP_ATOMIC, AUDIT_SELINUX_ERR,
