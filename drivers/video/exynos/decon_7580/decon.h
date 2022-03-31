@@ -527,14 +527,6 @@ struct dsim_log_cmd_buf {
 	u8 buf;
 };
 
-/* Related with size mismatch error */
-struct disp_ss_size_info {
-	u32 w_in;
-	u32 h_in;
-	u32 w_out;
-	u32 h_out;
-};
-
 /**
  * struct disp_ss_log - Display Subsystem Log
  * This struct includes DECON/DSIM
@@ -560,23 +552,6 @@ struct disp_bootloader_fb_info {
 	u32 r;
 	u32 b;
 	u32 format;
-};
-
-struct esd_protect {
-	u32 pcd_irq;
-	u32 err_irq;
-	u32 disp_det_irq;
-	u32 pcd_gpio;
-	u32 err_gpio;
-	u32 disp_det_gpio;
-	int pcd_pin_active;
-	int err_pin_active;
-	int det_pin_active;
-	u32 err_count;
-	u32 det_count;
-	struct workqueue_struct *esd_wq;
-	struct work_struct esd_work;
-	u32	queuework_pending;
 };
 
 /* Definitions below are used in the DECON */
@@ -606,6 +581,31 @@ void DISP_SS_EVENT_SIZE_ERR_LOG(struct v4l2_subdev *sd, struct disp_ss_size_info
 /**
 * END of CONFIG_DECON_EVENT_LOG
 */
+
+/* Related with size mismatch error */
+struct disp_ss_size_info {
+	u32 w_in;
+	u32 h_in;
+	u32 w_out;
+	u32 h_out;
+};
+
+struct esd_protect {
+	u32 pcd_irq;
+	u32 err_irq;
+	u32 disp_det_irq;
+	u32 pcd_gpio;
+	u32 err_gpio;
+	u32 disp_det_gpio;
+	int pcd_pin_active;
+	int err_pin_active;
+	int det_pin_active;
+	u32 err_count;
+	u32 det_count;
+	struct workqueue_struct *esd_wq;
+	struct work_struct esd_work;
+	u32	queuework_pending;
+};
 
 struct dpu {
 	u32 scr_onoff;
@@ -708,8 +708,8 @@ struct decon_device {
 	struct dentry			*debug_event;
 	struct disp_ss_log		disp_ss_log[DISP_EVENT_LOG_MAX];
 	atomic_t			disp_ss_log_idx;
-	u32				disp_ss_log_unmask;
 #endif
+	u32				disp_ss_log_unmask;
 #ifdef CONFIG_DECON_USE_BOOTLOADER_FB
 	struct disp_bootloader_fb_info	bl_fb_info;
 #endif
